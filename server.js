@@ -3,6 +3,9 @@
 require('dotenv').config();
 const express = require('express');
 const superagent = require('superagent');
+const pg = require('pg');
+const client = new pg.Client(process.env.DATABASE_URL);
+client.connect();
 
 const PORT = process.env.PORT || 3000;
 const server = express();
@@ -11,13 +14,11 @@ server.use(express.static('./public'));
 server.use(express.urlencoded({ extended: true }));
 server.set('view engine', 'ejs');
 
+server.get('/', getBooks);
 server.get('/searches', renderForm);
 server.post('/searches', findBook);
 
-// server.get('/test', (req, res) => {
-//     res.render('pages/searches/show')
-//     // res.redirect('http://www.google.com')
-// })
+
 
 
 
@@ -35,10 +36,6 @@ function findBook(req, res) {
         url = `https://www.googleapis.com/books/v1/volumes?q=in${req.body.search}:${req.body.keyword}`
     }
     console.log('url', url);
-    // console.log('asd', req.body.search);
-    // console.log('key', req.body.keyword);
-
-
 
     return superagent.get(url)
         .then(data => {
@@ -58,4 +55,22 @@ function Book(data) {
     this.description = data.volumeInfo.description
     this.image = (data.volumeInfo.imageLinks && data.volumeInfo.imageLinks.thumbnail) || ' '
 }
+
+
+
+function getBooks(req, res) {
+    let SQL = 'SELECT * FROM books;';
+
+    return client.query(SQL)
+        .then(results => {
+            if (results.rowCount === 0) {
+                res.render('pages/searches/show');
+            } else {
+                res.render('pages/index', { books: results.rows });
+            }
+        })
+        .catch(err => handleError(err, res));
+}
+
+
 server.listen(PORT, () => { console.log(`Hello form ${PORT}`); })
