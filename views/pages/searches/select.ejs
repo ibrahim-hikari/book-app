@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="" method="POST">
+        <label for="title">
+            <input type="text" name="title" value="<%= book.title %>">
+        </label>
+        <label for="author">
+            <input type="text" name="author" value="<%= book.authors %>">
+        </label>
+        <label for="ISBN">
+            <input type="text" name="isbn" value="<%= book.ISBN %>">
+        </label>
+        <label for="URL">
+            <input type="text" name="url" value="<%=book.image %>">
+        </label>
+        <label for="description">
+            <textarea type="text" name="description"><%= book.description %></textarea>
+        </label>
+        <label for="bookshelf">
+            <input type="text" name="bookshelf" value="bookshelf">
+        </label>
+        <button>Add to DataBase</button>
+    </form>
+</body>
+
+</html>

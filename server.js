@@ -5,7 +5,7 @@ const express = require('express');
 const superagent = require('superagent');
 const pg = require('pg');
 const client = new pg.Client(process.env.DATABASE_URL);
-client.connect();
+client.on('error', err => console.error(err));
 
 const PORT = process.env.PORT || 3000;
 const server = express();
@@ -14,16 +14,17 @@ server.use(express.static('./public'));
 server.use(express.urlencoded({ extended: true }));
 server.set('view engine', 'ejs');
 
-server.get('/', getBooks);
+server.get('/');
 server.get('/searches', renderForm);
 server.post('/searches', findBook);
+server.post('/select', selectedBook);
 
 
 
 
 
 function renderForm(req, res) {
-    res.render('pages/index')
+    res.render('pages/searches/search')
 
 }
 
@@ -48,6 +49,12 @@ function findBook(req, res) {
         });
 }
 
+// function savedbook(req , res) {
+
+
+
+// };
+
 function Book(data) {
     this.authors = (data.volumeInfo.authors && data.volumeInfo.authors[0]) || ' '
     this.title = data.volumeInfo.title
@@ -56,21 +63,26 @@ function Book(data) {
     this.image = (data.volumeInfo.imageLinks && data.volumeInfo.imageLinks.thumbnail) || ' '
 }
 
+function selectedBook(req, res) {
+    res.render('pages/searches/select')
 
 
-function getBooks(req, res) {
-    let SQL = 'SELECT * FROM books;';
 
-    return client.query(SQL)
-        .then(results => {
-            if (results.rowCount === 0) {
-                res.render('pages/searches/show');
-            } else {
-                res.render('pages/index', { books: results.rows });
-            }
-        })
-        .catch(err => handleError(err, res));
 }
+
+// function getBooks(req, res) {
+//     let SQL = 'SELECT * FROM books;';
+
+//     return client.query(SQL)
+//         .then(results => {
+//             if (results.rowCount === 0) {
+//                 res.render('pages/searches/show');
+//             } else {
+//                 res.render('pages/index', { books: results.rows });
+//             }
+//         })
+//         .catch(err => handleError(err, res));
+// }
 
 
 server.listen(PORT, () => { console.log(`Hello form ${PORT}`); })
