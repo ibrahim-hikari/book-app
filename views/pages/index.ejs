@@ -14,17 +14,23 @@
         <h2>
             Search by Title or Author
         </h2>
-        <form action="/test" method="GET">
+        <form action="/searches" method="POST">
             <label>
-                <input type="text">
+                <input type="text" placeholder='make a search' name="keyword">
             </label>
+
             <label>
-                <input type="radio" value="Author" name="name">
-                Author
+                <input type="radio" value="author" name="search">
+                <span>
+                    Author
+                </span>
             </label>
-            <label >
-                <input type="radio" value="Title" name="name">
-                Title
+
+            <label>
+                <input type="radio" value="title" name="search">
+                <span>
+                    Title
+                </span>
             </label>
             <input type="submit" value="Search the Goolge Books API">
         </form>

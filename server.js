@@ -11,41 +11,51 @@ server.use(express.static('./public'));
 server.use(express.urlencoded({ extended: true }));
 server.set('view engine', 'ejs');
 
-server.get('/', renderForm);
-server.get('/searches', findBook);
+server.get('/searches', renderForm);
+server.post('/searches', findBook);
 
-server.get('/test', (req, res) => {
-    res.render('pages/searches/show')
-    // res.redirect('http://www.google.com')
-})
+// server.get('/test', (req, res) => {
+//     res.render('pages/searches/show')
+//     // res.redirect('http://www.google.com')
+// })
 
 
 
 function renderForm(req, res) {
     res.render('pages/index')
+
 }
 
 
 function findBook(req, res) {
-    let searchBy = authors;
-    let words = peanuts;
-    const url = `https://www.googleapis.com/books/v1/volumes?q=in${searchBy}:${words}`
+    let url = `https://www.googleapis.com/books/v1/volumes?q=in`
+    if (req.body.search === 'title') {
+        url = `https://www.googleapis.com/books/v1/volumes?q=in${req.body.search}:${req.body.keyword}`
+    } else if (req.body.search === 'author') {
+        url = `https://www.googleapis.com/books/v1/volumes?q=in${req.body.search}:${req.body.keyword}`
+    }
+    console.log('url', url);
+    // console.log('asd', req.body.search);
+    // console.log('key', req.body.keyword);
+
+
+
     return superagent.get(url)
         .then(data => {
-            let books = data.body;
-            return books.items.map((stuff) => {
+            let books = data.body.items.map((stuff) => {
                 return new Book(stuff);
             });
-        })
-        .then(voala => res.render('pages/searches/show', {asd:voala}));
+            console.log('asd', books);
+
+            res.render('pages/searches/show', { books: books })
+        });
 }
 
-
 function Book(data) {
-    this.authors = data.volumeInfo.authors[0]
+    this.authors = (data.volumeInfo.authors && data.volumeInfo.authors[0]) || ' '
     this.title = data.volumeInfo.title
-    this.ISBN = data.volumeInfo.industryIdentifiers
+    this.ISBN = (data.volumeInfo.industryIdentifiers && data.volumeInfo.industryIdentifiers[0].identifier) || ' '
     this.description = data.volumeInfo.description
-    this.image = data.volumeInfo.imageLinks
+    this.image = (data.volumeInfo.imageLinks && data.volumeInfo.imageLinks.thumbnail) || ' '
 }
 server.listen(PORT, () => { console.log(`Hello form ${PORT}`); })
