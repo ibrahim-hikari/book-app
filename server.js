@@ -15,6 +15,7 @@ server.use(express.static('./public'));
 server.use(express.urlencoded({ extended: true }));
 server.set('view engine', 'ejs');
 
+// Routs //
 server.get('/', getBooks);
 server.get('/searches', renderForm);
 server.post('/searches', findBook);
