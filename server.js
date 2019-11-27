@@ -4,8 +4,8 @@ require('dotenv').config();
 const express = require('express');
 const superagent = require('superagent');
 const pg = require('pg');
-const client = new pg.Client(process.env.DATABASE_URL);
-client.connect();
+// const client = new pg.Client(process.env.DATABASE_URL);
+// client.connect();
 
 const PORT = process.env.PORT || 3000;
 const server = express();
@@ -14,12 +14,9 @@ server.use(express.static('./public'));
 server.use(express.urlencoded({ extended: true }));
 server.set('view engine', 'ejs');
 
-server.get('/', getBooks);
+server.get('/');
 server.get('/searches', renderForm);
 server.post('/searches', findBook);
-
-
-
 
 
 function renderForm(req, res) {
@@ -52,25 +49,27 @@ function Book(data) {
     this.authors = (data.volumeInfo.authors && data.volumeInfo.authors[0]) || ' '
     this.title = data.volumeInfo.title
     this.ISBN = (data.volumeInfo.industryIdentifiers && data.volumeInfo.industryIdentifiers[0].identifier) || ' '
-    this.description = data.volumeInfo.description
     this.image = (data.volumeInfo.imageLinks && data.volumeInfo.imageLinks.thumbnail) || ' '
+    this.description = data.volumeInfo.description
 }
 
 
 
-function getBooks(req, res) {
-    let SQL = 'SELECT * FROM books;';
+// function getBooks(req, res) {
+//     let SQL = 'SELECT * FROM books;';
 
-    return client.query(SQL)
-        .then(results => {
-            if (results.rowCount === 0) {
-                res.render('pages/searches/show');
-            } else {
-                res.render('pages/index', { books: results.rows });
-            }
-        })
-        .catch(err => handleError(err, res));
-}
+//     return client.query(SQL)
+//         .then(results => {
+//             if (results.rowCount === 0) {
+//                 res.render('pages/searches/show');
+//             } else {
+//                 res.render('pages/index', { books: results.rows });
+//             }
+//         })
+//         .catch(err => handleError(err, res));
+// }
 
 
 server.listen(PORT, () => { console.log(`Hello form ${PORT}`); })
+
+// 
