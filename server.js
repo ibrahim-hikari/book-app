@@ -64,10 +64,8 @@ function Book(data) {
 }
 
 function selectedBook(req, res) {
-    res.render('pages/searches/select')
-
-
-
+    let { title, authors, isbn, image, descr } = req.body
+    res.render('pages/searches/select', { book: req.body })
 }
 
 // function getBooks(req, res) {

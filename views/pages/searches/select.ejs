@@ -6,25 +6,13 @@
 </head>
 
 <body>
-    <form action="" method="POST">
-        <label for="title">
-            <input type="text" name="title" value="<%= book.title %>">
-        </label>
-        <label for="author">
-            <input type="text" name="author" value="<%= book.authors %>">
-        </label>
-        <label for="ISBN">
-            <input type="text" name="isbn" value="<%= book.ISBN %>">
-        </label>
-        <label for="URL">
-            <input type="text" name="url" value="<%=book.image %>">
-        </label>
-        <label for="description">
-            <textarea type="text" name="description"><%= book.description %></textarea>
-        </label>
-        <label for="bookshelf">
-            <input type="text" name="bookshelf" value="bookshelf">
-        </label>
+    <form action="/index" method="POST">
+        <input type="text" name="title" placeholder="title" value=< %=b ook.title %>>
+        <input type="text" name="author" placeholder="author" value=<%=b ook.authors %>>
+        <input type="text" name="isbn" placeholder="isbn" value=<%=b ook.ISBN %>>
+        <input type="text" name="image" placeholder="image" value=<%=b ook.image %>>
+        <textarea type="text" name="description" placeholder="description"><%= book.description %></textarea>
+        <input type="text" name="bookshelf" placeholder="bookshelf">
         <button>Add to DataBase</button>
     </form>
 </body>
