@@ -15,12 +15,14 @@ server.use(express.static('./public'));
 server.use(express.urlencoded({ extended: true }));
 server.set('view engine', 'ejs');
 
-// Routs //
+// All Routs //
 server.get('/', getBooks);
 server.get('/searches', renderForm);
 server.post('/searches', findBook);
 server.post('/select', selectedBook);
 server.post('/add', savedbook);
+server.put('/update:task_id', updateBook)
+
 
 
 function renderForm(req, res) {
@@ -83,6 +85,19 @@ function getBooks(req, res) {
             res.render('pages/index', { books: results.rows });
         })
 }
+
+function updateBook(request, response) {
+    let { title, authors, isbn, image, desc } = req.body
+    // need SQL to update the specific task that we were on
+    let SQL = `UPDATE books SET title=$1, authors=$2, isbn=$3, image=$4, desc=$5 WHERE id=$6;`;
+    // use request.params.task_id === whatever task we were on
+    let values = [title, authors, isbn, image, desc, request.params.task_id];
+
+    client.query(SQL, values)
+        .then(response.redirect(`/update/${request.params.task_id}`))
+        .catch(err => handleError(err, response));
+}
+
 
 client.connect()
     .then(() => server.listen(PORT, () => { console.log(`Hello form ${PORT}`); }));
