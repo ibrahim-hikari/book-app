@@ -4,16 +4,27 @@ require('dotenv').config();
 const express = require('express');
 const superagent = require('superagent');
 const pg = require('pg');
+const methodOverride = require('method-override');
 
 const client = new pg.Client(process.env.DATABASE_URL);
 client.on('error', err => console.error(err));
 
-const PORT = process.env.PORT || 3000;
 const server = express();
+const PORT = process.env.PORT || 3000;
 
 server.use(express.static('./public'));
 server.use(express.urlencoded({ extended: true }));
 server.set('view engine', 'ejs');
+
+// Middleware to handle PUT and DELETE
+server.use(methodOverride((req, res) => {
+    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+        // look in urlencoded POST bodies and delete it
+        let method = req.body._method;
+        delete req.body._method;
+        return method;
+    }
+}))
 
 // All Routs //
 server.get('/', getBooks);
@@ -21,7 +32,7 @@ server.get('/searches', renderForm);
 server.post('/searches', findBook);
 server.post('/select', selectedBook);
 server.post('/add', savedbook);
-server.put('/update:task_id', updateBook)
+server.put('/update:book_id', updateBook)
 
 
 
@@ -74,7 +85,7 @@ function Book(data) {
 }
 
 function selectedBook(req, res) {
-    let { title, authors, isbn, image, desc } = req.body
+    let { title, authors, isbn, image, description } = req.body
     res.render('pages/searches/select', { book: req.body })
 }
 
@@ -86,17 +97,25 @@ function getBooks(req, res) {
         })
 }
 
-function updateBook(request, response) {
-    let { title, authors, isbn, image, desc } = req.body
-    // need SQL to update the specific task that we were on
-    let SQL = `UPDATE books SET title=$1, authors=$2, isbn=$3, image=$4, desc=$5 WHERE id=$6;`;
-    // use request.params.task_id === whatever task we were on
-    let values = [title, authors, isbn, image, desc, request.params.task_id];
+function updateBook(req, res) {
+    let { title, authors, isbn, image, description } = req.body
+    let SQL = `UPDATE books SET title=$1, author=$2, image_url=$3, isbn=$4, description=$5 WHERE id=$6;`;
+    let values = [title, authors, isbn, image, description, req.params.book_id];
 
     client.query(SQL, values)
-        .then(response.redirect(`/update/${request.params.task_id}`))
-        .catch(err => handleError(err, response));
+        .then(res.redirect('/'))
+    // .catch(err => handleError(err, response));
 }
+// function getOnebook(req, response) {
+//     let SQL = 'SELECT * FROM books WHERE id=$1;';
+//     let values = [req.params.book_id];
+
+//     return client.query(SQL, values)
+//         .then(result => {
+//             return response.render('pages/detail-view', { task: result.rows[0] });
+//         })
+//     //   .catch(err => handleError(err, response));
+// }
 
 
 client.connect()
