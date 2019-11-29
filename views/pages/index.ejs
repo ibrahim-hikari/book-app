@@ -3,46 +3,28 @@
 
 <head>
     <title>Document</title>
-    <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
-    <header>
-        <h1>Hello World From Amman</h1>
-    </header>
-    <main>
-        <h2>
-            Search by Title or Author
-        </h2>
-        <form action="/searches" method="POST">
-            <label>
-                <input type="text" placeholder='make a search' name="keyword">
-            </label>
-
-            <label>
-                <input type="radio" value="author" name="search">
-                <span>
-                    Author
-                </span>
-            </label>
-
-            <label>
-                <input type="radio" value="title" name="search">
-                <span>
-                    Title
-                </span>
-            </label>
-            <input type="submit" value="Search the Goolge Books API">
-        </form>
-    </main>
-    <footer>
-
-    </footer>
-
-
-
-    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-    <script src="/app.js"></script>
+    <% books.forEach(book => { %>
+    <li>
+        <div><%= book.title %></div>
+        <div><%= book.author %></div>
+        <div><img src=<%= book.image_url %>></div>
+        <div><%= book.isbn %></div>
+        <div><%= book.description %></div>
+        <div><%= book.bookshelf %></div>
+    </li>
+    <form action="/update/<%= book.id%>" method="POST">
+        <input type="hidden" name="_method" value="put">
+        <input type="text" name="title" value="<%- book.title %>">
+        <input type="text" name="authors" value="<%- book.authors %>">
+        <input type="text" name="isbn" value="<%- book.isbn %>">
+        <input type="text" name="image" value="<%-  book.image %>">
+        <input type="text" name="description" value="<%- book.description %>">
+        <button>Update</button>
+    </form>
+    <% }) %>
 </body>
 
 </html>
