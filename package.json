@@ -20,7 +20,7 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "ejs": "^3.0.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "pg": "^7.14.0",
     "superagent": "^4.1.0"
   }
